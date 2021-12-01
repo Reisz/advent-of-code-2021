@@ -22,7 +22,7 @@ fn read_input() -> Result<Vec<usize>> {
     Ok(result)
 }
 
-fn process<I: IntoIterator<Item = usize>>(values: I) -> usize {
+fn part1<I: IntoIterator<Item = usize>>(values: I) -> usize {
     values
         .into_iter()
         .tuple_windows()
@@ -30,7 +30,18 @@ fn process<I: IntoIterator<Item = usize>>(values: I) -> usize {
         .count()
 }
 
+fn part2<I: IntoIterator<Item = usize>>(values: I) -> usize {
+    part1(
+        values
+            .into_iter()
+            .tuple_windows()
+            .map(|(a, b, c)| a + b + c),
+    )
+}
+
 fn main() -> Result<()> {
-    println!("{}", process(read_input()?));
+    let input = read_input()?;
+    println!("Part 1: {}", part1(input.iter().cloned()));
+    println!("Part 2: {}", part2(input));
     Ok(())
 }
