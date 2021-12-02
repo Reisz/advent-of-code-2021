@@ -12,7 +12,7 @@ impl Iterator for StdinLines {
         self.stdin.read_line(&mut buffer).ok()?;
         buffer.pop();
 
-        Some(buffer).filter(String::is_empty)
+        Some(buffer).filter(|l| !l.is_empty())
     }
 }
 
