@@ -1,25 +1,9 @@
 use anyhow::Result;
 use itertools::Itertools;
-
-use std::io;
+use util::stdin_lines;
 
 fn read_input() -> Result<Vec<usize>> {
-    let mut buffer = String::new();
-    let stdin = io::stdin();
-
-    let mut result = Vec::new();
-    loop {
-        stdin.read_line(&mut buffer)?;
-        buffer.pop();
-
-        if buffer.is_empty() {
-            break;
-        }
-
-        result.push(buffer.parse()?);
-        buffer.clear();
-    }
-    Ok(result)
+    stdin_lines().map(|l| Ok(l.parse()?)).collect()
 }
 
 fn part1<I: IntoIterator<Item = usize>>(values: I) -> usize {
