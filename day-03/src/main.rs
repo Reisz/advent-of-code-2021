@@ -1,4 +1,4 @@
-use std::{ops::Add, str::FromStr};
+use std::{cmp::Ordering, ops::Add, str::FromStr};
 
 use anyhow::Result;
 use util::stdin_lines;
@@ -24,7 +24,7 @@ impl PowerReport {
 
     fn power_consumption(&self) -> usize {
         let (gamma, epsilon) = self.gamma_epsilon();
-        return gamma * epsilon;
+        gamma * epsilon
     }
 }
 
@@ -69,28 +69,24 @@ fn part2_counter(i: usize) -> impl Fn(&String) -> bool {
     move |v: &String| v.chars().nth(i).unwrap() == '1'
 }
 
-fn part2_step<C: Fn(usize, usize) -> bool>(input: Vec<usize>, cmp: C, decider: char) -> Vec<usize> {
-    todo!()
+fn part2_steps(mut input: Vec<String>, req_ordering: Ordering, decider: char) -> usize {
+    let mut idx = 1;
+    while input.len() > 1 {
+        let (a, b): (Vec<_>, Vec<_>) = input.into_iter().partition(part2_counter(idx));
+        let ord = a.len().cmp(&b.len());
+        input = ((decider == '1' && ord.is_eq()) || ord == req_ordering)
+            .then(move || a)
+            .unwrap_or(b);
+        idx += 1;
+    }
+    usize::from_str_radix(&input[0], 2).unwrap()
 }
 
 fn part2<I: IntoIterator<Item = String>>(values: I) -> usize {
-    let (mut oxygen, mut co2): (Vec<_>, Vec<_>) = values.into_iter().partition(part2_counter(0));
-
-    let mut idx = 1;
-    while oxygen.len() > 1 {
-        let (a, b): (Vec<_>, Vec<_>) = oxygen.into_iter().partition(part2_counter(idx));
-        oxygen = if a.len() > b.len() { a } else { b };
-        idx += 1;
-    }
-
-    idx = 1;
-    while co2.len() > 1 {
-        let (a, b): (Vec<_>, Vec<_>) = co2.into_iter().partition(part2_counter(idx));
-        co2 = if a.len() > b.len() { b } else { a };
-        idx += 1;
-    }
-
-    usize::from_str_radix(&oxygen[0], 2).unwrap() * usize::from_str_radix(&co2[0], 2).unwrap()
+    let (oxygen, co2): (Vec<_>, Vec<_>) = values.into_iter().partition(part2_counter(0));
+    let oxygen = part2_steps(oxygen, Ordering::Greater, '1');
+    let co2 = part2_steps(co2, Ordering::Less, '0');
+    oxygen * co2
 }
 
 fn main() -> Result<()> {
