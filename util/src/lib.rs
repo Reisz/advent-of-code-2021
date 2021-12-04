@@ -9,7 +9,9 @@ impl Iterator for StdinLines {
 
     fn next(&mut self) -> Option<Self::Item> {
         let mut buffer = String::new();
-        self.stdin.read_line(&mut buffer).ok()?;
+        self.stdin
+            .read_line(&mut buffer)
+            .expect("Could not read line.");
         buffer.pop();
 
         Some(buffer).filter(|l| !l.is_empty())
