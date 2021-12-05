@@ -6,6 +6,7 @@ use std::{
 use anyhow::Result;
 use util::stdin_lines;
 
+#[allow(clippy::unusual_byte_groupings)]
 const WINS: &[u32] = &[
     0b_11111_00000_00000_00000_00000,
     0b_00000_11111_00000_00000_00000,

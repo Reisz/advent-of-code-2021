@@ -69,7 +69,7 @@ impl FromStr for Line {
 }
 
 fn read_input() -> Result<Vec<Line>> {
-    stdin_lines().map(|l| Ok(l.parse()?)).collect()
+    stdin_lines().map(|l| l.parse()).collect()
 }
 
 fn part1<I: IntoIterator<Item = Line>>(values: I) -> usize {
