@@ -29,3 +29,16 @@ fn main() -> Result<()> {
     println!("Part 2: {}", part2(input));
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    const INPUT: &[usize] = &[199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
+
+    #[test]
+    fn test() {
+        assert_eq!(part1(INPUT.iter().cloned()), 7);
+        assert_eq!(part2(INPUT.iter().cloned()), 5);
+    }
+}

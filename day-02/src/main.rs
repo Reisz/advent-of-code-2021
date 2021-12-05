@@ -93,3 +93,23 @@ fn main() -> Result<()> {
     println!("Part 2: {}", part2(input).combine());
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    const INPUT: &[Command] = &[
+        Command::Forward(5),
+        Command::Down(5),
+        Command::Forward(8),
+        Command::Up(3),
+        Command::Down(8),
+        Command::Forward(2),
+    ];
+
+    #[test]
+    fn test() {
+        assert_eq!(part1(INPUT.iter().cloned()).combine(), 150);
+        assert_eq!(part2(INPUT.iter().cloned()).combine(), 900);
+    }
+}

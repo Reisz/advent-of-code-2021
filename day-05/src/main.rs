@@ -101,6 +101,19 @@ fn main() -> Result<()> {
 mod test {
     use super::*;
 
+    const INPUT: &[Line] = &[
+        Line(Pos { x: 0, y: 9 }, Pos { x: 5, y: 9 }),
+        Line(Pos { x: 8, y: 0 }, Pos { x: 0, y: 8 }),
+        Line(Pos { x: 9, y: 4 }, Pos { x: 3, y: 4 }),
+        Line(Pos { x: 2, y: 2 }, Pos { x: 2, y: 1 }),
+        Line(Pos { x: 7, y: 0 }, Pos { x: 7, y: 4 }),
+        Line(Pos { x: 6, y: 4 }, Pos { x: 2, y: 0 }),
+        Line(Pos { x: 0, y: 9 }, Pos { x: 2, y: 9 }),
+        Line(Pos { x: 3, y: 4 }, Pos { x: 1, y: 4 }),
+        Line(Pos { x: 0, y: 0 }, Pos { x: 8, y: 8 }),
+        Line(Pos { x: 5, y: 5 }, Pos { x: 8, y: 2 }),
+    ];
+
     #[test]
     fn test_line_points() -> Result<()> {
         assert_eq!(
@@ -120,5 +133,11 @@ mod test {
             vec![Pos { x: 9, y: 7 }, Pos { x: 8, y: 8 }, Pos { x: 7, y: 9 }]
         );
         Ok(())
+    }
+
+    #[test]
+    fn test() {
+        assert_eq!(part1(INPUT.iter().cloned()), 5);
+        assert_eq!(part2(INPUT.iter().cloned()), 12);
     }
 }

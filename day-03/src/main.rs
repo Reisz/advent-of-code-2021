@@ -95,3 +95,19 @@ fn main() -> Result<()> {
     println!("Part2: {}", part2(input));
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    const INPUT: &[&str] = &[
+        "00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001",
+        "00010", "01010",
+    ];
+
+    #[test]
+    fn test() {
+        assert_eq!(part1(INPUT.iter().cloned().map(str::to_owned)), 198);
+        assert_eq!(part2(INPUT.iter().cloned().map(str::to_owned)), 230);
+    }
+}
