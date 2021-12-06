@@ -8,3 +8,10 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 util = { path = "../util" }
+
+[dev-dependencies]
+criterion = { version = "0.3", features = ["html_reports"] }
+
+[[bench]]
+name = "bench"
+harness = false
