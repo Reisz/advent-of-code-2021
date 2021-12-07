@@ -19,8 +19,12 @@ mod test {
     const INPUT: &[usize] = &[];
 
     #[test]
-    fn test() {
+    fn test1() {
         assert_eq!(part1(INPUT), 0);
+    }
+
+    #[test]
+    fn test2() {
         assert_eq!(part2(INPUT), 0);
     }
 }

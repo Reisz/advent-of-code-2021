@@ -46,8 +46,12 @@ mod test {
     ];
 
     #[test]
-    fn test() {
+    fn test1() {
         assert_eq!(part1(INPUT), 5);
+    }
+
+    #[test]
+    fn test2() {
         assert_eq!(part2(INPUT), 12);
     }
 }

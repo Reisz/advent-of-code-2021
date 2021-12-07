@@ -45,8 +45,12 @@ mod test {
     const INPUT: &[u8] = &[3, 4, 3, 1, 2];
 
     #[test]
-    fn test() {
+    fn test1() {
         assert_eq!(part1(INPUT), 5934);
+    }
+
+    #[test]
+    fn test2() {
         assert_eq!(part2(INPUT), 26984457539);
     }
 }

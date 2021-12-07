@@ -30,8 +30,12 @@ mod test {
     const INPUT: &[usize] = &[199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
 
     #[test]
-    fn test() {
+    fn test1() {
         assert_eq!(part1(INPUT), 7);
+    }
+
+    #[test]
+    fn test2() {
         assert_eq!(part2(INPUT), 5);
     }
 }

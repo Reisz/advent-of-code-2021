@@ -86,9 +86,8 @@ mod test {
         ],
     ];
 
-    #[test]
-    fn test() {
-        let input = Input(
+    fn input() -> Input {
+        Input(
             INPUT_NUMBERS.iter().cloned().collect(),
             INPUT_BOARDS
                 .iter()
@@ -98,8 +97,18 @@ mod test {
                     hits: 0,
                 })
                 .collect(),
-        );
+        )
+    }
+
+    #[test]
+    fn test1() {
+        let input = input();
         assert_eq!(part1(&input), 4512);
+    }
+
+    #[test]
+    fn test2() {
+        let input = input();
         assert_eq!(part2(&input), 1924);
     }
 }
