@@ -47,11 +47,10 @@ macro_rules! bench {
         pub fn benchmark(c: &mut Criterion) {
             let mut group = c.benchmark_group(format!("Day {:02}", &stringify!($id)[4..]));
 
-            group.bench_function("Parsing", |b| {
-                b.iter(|| read_input(black_box(INPUT.lines())))
-            });
+            let lines: Vec<&str> = INPUT.lines().collect();
+            group.bench_function("Parsing", |b| b.iter(|| read_input(black_box(&lines))));
 
-            let values = read_input(INPUT.lines()).unwrap();
+            let values = read_input(lines).unwrap();
             group.bench_function("Part 1", |b| b.iter(|| part1(black_box(&values))));
             group.bench_function("Part 2", |b| b.iter(|| part2(black_box(&values))));
         }
