@@ -22,11 +22,14 @@ impl Input {
 
         if x > 0 && self.at(x - 1, y) <= val {
             return false;
-        } else if y > 0 && self.at(x, y - 1) <= val {
+        }
+        if y > 0 && self.at(x, y - 1) <= val {
             return false;
-        } else if x + 1 < self.width() && self.at(x + 1, y) <= val {
+        }
+        if x + 1 < self.width() && self.at(x + 1, y) <= val {
             return false;
-        } else if y + 1 < self.height() && self.at(x, y + 1) <= val {
+        }
+        if y + 1 < self.height() && self.at(x, y + 1) <= val {
             return false;
         }
 
@@ -45,7 +48,7 @@ pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<
                 .map(|c| {
                     c.to_digit(10)
                         .ok_or(anyhow!("Digit parsing failed."))
-                        .and_then(|v| Ok(v.try_into().unwrap()))
+                        .map(|v| v.try_into().unwrap())
                 })
                 .collect::<Vec<_>>()
         })

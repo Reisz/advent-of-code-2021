@@ -8,7 +8,7 @@ use swap_remove_pred::SwapRemovePred;
 
 fn to_bits(s: &str) -> u8 {
     s.chars()
-        .map(|c| c.to_digit(17).expect(&format!("{}", c)) - 10)
+        .map(|c| c.to_digit(17).unwrap_or_else(|| panic!("{}", c)) - 10)
         .fold(0, |acc, val| acc | (1 << val))
 }
 
