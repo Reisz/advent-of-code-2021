@@ -25,7 +25,7 @@ pub struct Bingo {
 
 impl Bingo {
     pub fn hit(&mut self, val: u8) {
-        for (i, field) in self.fields.iter().cloned().enumerate() {
+        for (i, field) in self.fields.iter().copied().enumerate() {
             if val == field {
                 self.hits |= 1 << i;
             }
@@ -33,13 +33,13 @@ impl Bingo {
     }
 
     pub fn check(&self) -> bool {
-        WINS.iter().cloned().any(|win| (self.hits & win) == win)
+        WINS.iter().copied().any(|win| (self.hits & win) == win)
     }
 
     pub fn score(&self) -> usize {
         let mut score = 0;
 
-        for (i, field) in self.fields.iter().cloned().enumerate() {
+        for (i, field) in self.fields.iter().copied().enumerate() {
             if self.hits & (1 << i) == 0 {
                 score += field as usize;
             }

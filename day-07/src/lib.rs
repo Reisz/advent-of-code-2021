@@ -13,7 +13,7 @@ pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
 }
 
 fn median<'a, I: IntoIterator<Item = &'a usize>>(values: I) -> usize {
-    let mut values: Vec<_> = values.into_iter().cloned().collect();
+    let mut values: Vec<_> = values.into_iter().copied().collect();
     values.sort_unstable();
     values[values.len() / 2]
 }

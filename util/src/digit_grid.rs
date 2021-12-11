@@ -18,7 +18,7 @@ impl DigitGrid {
     }
 
     pub fn get(&self, x: isize, y: isize) -> Option<u8> {
-        if x < 0 || y < 0 || x >= self.width as isize || y >= self.height as isize {
+        if x < 0 || y < 0 || x >= self.width() || y >= self.height() as isize {
             return None;
         }
 
@@ -30,7 +30,7 @@ impl DigitGrid {
 }
 
 #[derive(Debug, Error)]
-pub enum DigitGridParseError {
+pub enum ParseError {
     #[error("width of line {0} did not match previous widths")]
     LineMismatch(usize),
     #[error("found unexpected character {c} at position ({x}, {y})")]
@@ -40,7 +40,7 @@ pub enum DigitGridParseError {
 }
 
 impl FromStr for DigitGrid {
-    type Err = DigitGridParseError;
+    type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut width = None;
@@ -52,14 +52,14 @@ impl FromStr for DigitGrid {
         for c in s.chars() {
             if c == '\n' {
                 if *width.get_or_insert(current_width) != current_width {
-                    return Err(DigitGridParseError::LineMismatch(height));
+                    return Err(ParseError::LineMismatch(height));
                 }
                 current_width = 0;
                 height += 1;
             } else {
                 content.push(
                     c.to_digit(10)
-                        .ok_or(DigitGridParseError::UnexpectedCharater {
+                        .ok_or(ParseError::UnexpectedCharater {
                             x: current_width,
                             y: height,
                             c,
@@ -72,7 +72,7 @@ impl FromStr for DigitGrid {
         }
 
         if current_width > 0 {
-            return Err(DigitGridParseError::NoTrailingNewline);
+            return Err(ParseError::NoTrailingNewline);
         }
 
         Ok(Self {

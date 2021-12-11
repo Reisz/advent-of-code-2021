@@ -22,7 +22,7 @@ pub fn part1<'a, I: IntoIterator<Item = &'a Line>>(values: I) -> usize {
 pub fn part2<'a, I: IntoIterator<Item = &'a Line>>(values: I) -> usize {
     values
         .into_iter()
-        .flat_map(|l| l.points())
+        .flat_map(Line::points)
         .counts()
         .into_iter()
         .filter(|(_, count)| *count > 1)

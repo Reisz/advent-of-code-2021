@@ -20,6 +20,6 @@ jobs:
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+          args: --all-features -- -W clippy::pedantic -A clippy::missing_errors_doc -A clippy::missing-panics-doc -A clippy::must-use-candidate
       - name: Run tests
         run: cargo test --verbose

@@ -16,11 +16,7 @@ fn neighbors(x: isize, y: isize) -> impl Iterator<Item = (isize, isize)> {
 fn is_low_point(grid: &DigitGrid, x: isize, y: isize) -> bool {
     let val = grid.get(x, y).unwrap();
     for (x, y) in neighbors(x, y) {
-        if grid
-            .get(x, y)
-            .map(|neighbor| val >= neighbor)
-            .unwrap_or(false)
-        {
+        if grid.get(x, y).map_or(false, |neighbor| val >= neighbor) {
             return false;
         }
     }
@@ -58,11 +54,7 @@ pub fn part2(values: &DigitGrid) -> usize {
                     }
 
                     for (x, y) in neighbors(x, y) {
-                        if values
-                            .get(x, y)
-                            .map(|neighbor| neighbor > val)
-                            .unwrap_or(false)
-                        {
+                        if values.get(x, y).map_or(false, |neighbor| neighbor > val) {
                             todo.push((x, y));
                         }
                     }

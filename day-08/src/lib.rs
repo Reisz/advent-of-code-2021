@@ -36,7 +36,7 @@ pub fn part1<'a, I: IntoIterator<Item = &'a Input>>(values: I) -> usize {
     values
         .into_iter()
         .flat_map(|v| {
-            v.1.iter().cloned().map(|v| {
+            v.1.iter().copied().map(|v| {
                 let count = v.count_ones();
                 (count == 2 || count == 3 || count == 4 || count == 7) as usize
             })

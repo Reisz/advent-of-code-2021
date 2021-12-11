@@ -20,10 +20,7 @@ pub fn read_input(reader: impl BufRead) -> Result<Input> {
         .map(|l| Ok(l?))
         .collect::<Result<Vec<_>>>()?
         .join("\n");
-    let boards = buf
-        .split("\n\n")
-        .map(|b| b.parse())
-        .collect::<Result<_>>()?;
+    let boards = buf.split("\n\n").map(str::parse).collect::<Result<_>>()?;
 
     Ok(Input(numbers, boards))
 }
