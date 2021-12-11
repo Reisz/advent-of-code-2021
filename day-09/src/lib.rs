@@ -1,69 +1,39 @@
-use std::{collections::HashSet, io::BufRead};
+use std::{collections::HashSet, io::Read};
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
+use util::digit_grid::DigitGrid;
 
-pub struct Input(usize, Vec<u8>);
-
-impl Input {
-    fn at(&self, x: usize, y: usize) -> u8 {
-        self.1[x + self.0 * y]
-    }
-
-    fn width(&self) -> usize {
-        self.0
-    }
-
-    fn height(&self) -> usize {
-        self.1.len() / self.0
-    }
-
-    fn is_low_point(&self, x: usize, y: usize) -> bool {
-        let val = self.at(x, y);
-
-        if x > 0 && self.at(x - 1, y) <= val {
-            return false;
-        }
-        if y > 0 && self.at(x, y - 1) <= val {
-            return false;
-        }
-        if x + 1 < self.width() && self.at(x + 1, y) <= val {
-            return false;
-        }
-        if y + 1 < self.height() && self.at(x, y + 1) <= val {
-            return false;
-        }
-
-        true
-    }
+pub fn read_input(mut reader: impl Read) -> Result<DigitGrid> {
+    let mut buf = String::new();
+    reader.read_to_string(&mut buf)?;
+    Ok(buf.parse()?)
 }
 
-pub fn read_input(reader: impl BufRead) -> Result<Input> {
-    let mut width = 0;
-    let values: Vec<_> = reader
-        .lines()
-        .flat_map(|l| {
-            let l = l.unwrap();
-            width = l.len();
-            l.chars()
-                .map(|c| {
-                    Ok(c.to_digit(10)
-                        .ok_or(anyhow!("Digit parsing failed."))
-                        .map(|v| v.try_into().unwrap()))
-                })
-                .collect::<Result<Vec<_>>>()
-                .unwrap()
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    Ok(Input(width, values))
+fn neighbors(x: isize, y: isize) -> impl Iterator<Item = (isize, isize)> {
+    [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)].into_iter()
 }
 
-pub fn part1(values: &Input) -> usize {
+fn is_low_point(grid: &DigitGrid, x: isize, y: isize) -> bool {
+    let val = grid.get(x, y).unwrap();
+    for (x, y) in neighbors(x, y) {
+        if grid
+            .get(x, y)
+            .map(|neighbor| val >= neighbor)
+            .unwrap_or(false)
+        {
+            return false;
+        }
+    }
+    true
+}
+
+pub fn part1(values: &DigitGrid) -> usize {
     let mut total = 0;
 
     for x in 0..values.width() {
         for y in 0..values.height() {
-            if values.is_low_point(x, y) {
-                total += 1 + values.at(x, y) as usize;
+            if is_low_point(values, x, y) {
+                total += 1 + values.get(x, y).unwrap() as usize;
             }
         }
     }
@@ -71,33 +41,30 @@ pub fn part1(values: &Input) -> usize {
     total
 }
 
-pub fn part2(values: &Input) -> usize {
-    let mut basins = Vec::new();
+pub fn part2(values: &DigitGrid) -> usize {
+    let mut basins: Vec<usize> = Vec::new();
 
     for x in 0..values.width() {
         for y in 0..values.height() {
-            if values.is_low_point(x, y) {
+            if is_low_point(values, x, y) {
                 let mut todo = Vec::new();
                 let mut visited = HashSet::new();
                 todo.push((x, y));
 
                 while let Some((x, y)) = todo.pop() {
-                    let val = values.at(x, y);
+                    let val = values.get(x, y).unwrap();
                     if val == 9 {
                         continue;
                     }
 
-                    if x > 0 && values.at(x - 1, y) > val {
-                        todo.push((x - 1, y));
-                    }
-                    if y > 0 && values.at(x, y - 1) > val {
-                        todo.push((x, y - 1));
-                    }
-                    if x + 1 < values.width() && values.at(x + 1, y) > val {
-                        todo.push((x + 1, y));
-                    }
-                    if y + 1 < values.height() && values.at(x, y + 1) > val {
-                        todo.push((x, y + 1));
+                    for (x, y) in neighbors(x, y) {
+                        if values
+                            .get(x, y)
+                            .map(|neighbor| neighbor > val)
+                            .unwrap_or(false)
+                        {
+                            todo.push((x, y));
+                        }
                     }
 
                     visited.insert((x, y));
@@ -117,13 +84,14 @@ pub fn part2(values: &Input) -> usize {
 mod test {
     use super::*;
 
-    const INPUT: &[u8] = &[
-        2, 1, 9, 9, 9, 4, 3, 2, 1, 0, 3, 9, 8, 7, 8, 9, 4, 9, 2, 1, 9, 8, 5, 6, 7, 8, 9, 8, 9, 2,
-        8, 7, 6, 7, 8, 9, 6, 7, 8, 9, 9, 8, 9, 9, 9, 6, 5, 6, 7, 8,
-    ];
+    const INPUT: &str = "2199943210\n\
+                        3987894921\n\
+                        9856789892\n\
+                        8767896789\n\
+                        9899965678\n";
 
-    fn input() -> Input {
-        Input(10, INPUT.iter().cloned().collect())
+    fn input() -> DigitGrid {
+        INPUT.parse().unwrap()
     }
 
     #[test]

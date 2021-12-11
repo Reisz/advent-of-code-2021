@@ -1,3 +1,5 @@
+pub mod digit_grid;
+
 #[macro_export]
 macro_rules! main {
     ($id:ident) => {
