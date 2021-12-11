@@ -1,12 +1,12 @@
-mod power_report;
-
-use std::{cmp::Ordering, ops::Add};
+use std::{cmp::Ordering, io::BufRead, ops::Add};
 
 use anyhow::Result;
 use power_report::PowerReport;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<String>> {
-    Ok(lines.into_iter().map(|s| s.as_ref().to_owned()).collect())
+mod power_report;
+
+pub fn read_input(reader: impl BufRead) -> Result<Vec<String>> {
+    reader.lines().map(|l| Ok(l?)).collect()
 }
 
 pub fn part1<I: IntoIterator<Item = S>, S: AsRef<str>>(values: I) -> usize {

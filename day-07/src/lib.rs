@@ -1,13 +1,12 @@
-use std::cmp::min;
+use std::{cmp::min, io::BufRead};
 
 use anyhow::{anyhow, Result};
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<usize>> {
-    lines
-        .into_iter()
+pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
+    reader
+        .lines()
         .next()
-        .ok_or(anyhow!("Expected input line"))?
-        .as_ref()
+        .ok_or_else(|| anyhow!("expected input"))??
         .split(',')
         .map(|n| Ok(n.parse()?))
         .collect()

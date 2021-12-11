@@ -1,23 +1,24 @@
-mod bingo;
+use std::io::BufRead;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use bingo::Bingo;
+
+mod bingo;
 
 pub struct Input(Vec<u8>, Vec<Bingo>);
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Input> {
-    let mut lines = lines.into_iter();
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
+    let mut lines = reader.lines();
     let numbers = lines
         .next()
-        .unwrap()
-        .as_ref()
+        .ok_or_else(|| anyhow!("expected input"))??
         .split(',')
         .map(|n| Ok(n.parse::<u8>()?))
         .collect::<Result<_>>()?;
 
     let buf: String = lines
-        .map(|s| s.as_ref().to_owned())
-        .collect::<Vec<_>>()
+        .map(|l| Ok(l?))
+        .collect::<Result<Vec<_>>>()?
         .join("\n");
     let boards = buf
         .split("\n\n")

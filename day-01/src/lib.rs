@@ -1,8 +1,10 @@
+use std::io::BufRead;
+
 use anyhow::Result;
 use itertools::Itertools;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<usize>> {
-    lines.into_iter().map(|l| Ok(l.as_ref().parse()?)).collect()
+pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
+    reader.lines().map(|l| Ok(l?.parse()?)).collect()
 }
 
 pub fn part1<'a, I: IntoIterator<Item = &'a usize>>(values: I) -> usize {

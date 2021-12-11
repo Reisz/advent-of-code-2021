@@ -1,6 +1,8 @@
+use std::io::BufRead;
+
 use anyhow::Result;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<usize>> {
+pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
     todo!()
 }
 

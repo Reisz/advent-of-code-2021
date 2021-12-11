@@ -1,6 +1,6 @@
 mod swap_remove_pred;
 
-use std::str::FromStr;
+use std::{io::BufRead, str::FromStr};
 
 use anyhow::{anyhow, Result};
 
@@ -28,8 +28,8 @@ impl FromStr for Input {
     }
 }
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<Input>> {
-    lines.into_iter().map(|l| l.as_ref().parse()).collect()
+pub fn read_input(reader: impl BufRead) -> Result<Vec<Input>> {
+    reader.lines().map(|l| l?.parse()).collect()
 }
 
 pub fn part1<'a, I: IntoIterator<Item = &'a Input>>(values: I) -> usize {

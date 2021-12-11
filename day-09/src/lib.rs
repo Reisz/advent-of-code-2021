@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, io::BufRead};
 
 use anyhow::{anyhow, Result};
 
@@ -37,20 +37,21 @@ impl Input {
     }
 }
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Input> {
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     let mut width = 0;
-    let values: Vec<_> = lines
-        .into_iter()
+    let values: Vec<_> = reader
+        .lines()
         .flat_map(|l| {
-            let l = l.as_ref();
+            let l = l.unwrap();
             width = l.len();
             l.chars()
                 .map(|c| {
-                    c.to_digit(10)
+                    Ok(c.to_digit(10)
                         .ok_or(anyhow!("Digit parsing failed."))
-                        .map(|v| v.try_into().unwrap())
+                        .map(|v| v.try_into().unwrap()))
                 })
-                .collect::<Vec<_>>()
+                .collect::<Result<Vec<_>>>()
+                .unwrap()
         })
         .collect::<Result<Vec<_>, _>>()?;
     Ok(Input(width, values))

@@ -1,12 +1,14 @@
-mod command;
-mod position;
+use std::io::BufRead;
 
 use anyhow::Result;
 use command::Command;
 use position::Position;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<Command>> {
-    lines.into_iter().map(|l| l.as_ref().parse()).collect()
+mod command;
+mod position;
+
+pub fn read_input(reader: impl BufRead) -> Result<Vec<Command>> {
+    reader.lines().map(|l| l?.parse()).collect()
 }
 
 pub fn part1<'a, I: IntoIterator<Item = &'a Command>>(values: I) -> usize {

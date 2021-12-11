@@ -1,14 +1,15 @@
-mod bracket;
-
-use bracket::Token;
+use std::io::BufRead;
 
 use anyhow::Result;
+use bracket::Token;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<Vec<Token>>> {
-    Ok(lines
-        .into_iter()
-        .map(|l| l.as_ref().chars().map(Token::from).collect())
-        .collect())
+mod bracket;
+
+pub fn read_input(reader: impl BufRead) -> Result<Vec<Vec<Token>>> {
+    reader
+        .lines()
+        .map(|l| Ok(l?.chars().map(Token::from).collect()))
+        .collect()
 }
 
 pub fn part1<'a, I: IntoIterator<Item = &'a Vec<Token>>>(values: I) -> usize {
@@ -61,23 +62,23 @@ pub fn part2<'a, I: IntoIterator<Item = &'a Vec<Token>>>(values: I) -> usize {
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &[&str] = &[
-        "[({(<(())[]>[[{[]{<()<>>",
-        "[(()[<>])]({[<{<<[]>>(",
-        "{([(<{}[<>[]}>{[]{[(<()>",
-        "(((({<>}<{<{<>}{[]{[]{}",
-        "[[<[([]))<([[{}[[()]]]",
-        "[{[{({}]{}}([{[{{{}}([]",
-        "{<[[]]>}<{[{[{[]{()[[[]",
-        "[<(<(<(<{}))><([]([]()",
-        "<{([([[(<>()){}]>(<<{{",
-        "<{([{{}}[<[[[<>{}]]]>[]]",
-    ];
+    const INPUT: &str = "[({(<(())[]>[[{[]{<()<>>\n\
+        [(()[<>])]({[<{<<[]>>(\n\
+        {([(<{}[<>[]}>{[]{[(<()>\n\
+        (((({<>}<{<{<>}{[]{[]{}\n\
+        [[<[([]))<([[{}[[()]]]\n\
+        [{[{({}]{}}([{[{{{}}([]\n\
+        {<[[]]>}<{[{[{[]{()[[[]\n\
+        [<(<(<(<{}))><([]([]()\n\
+        <{([([[(<>()){}]>(<<{{\n\
+        <{([{{}}[<[[[<>{}]]]>[]]";
 
     fn input() -> Vec<Vec<Token>> {
-        read_input(INPUT).unwrap()
+        read_input(Cursor::new(INPUT)).unwrap()
     }
 
     #[test]

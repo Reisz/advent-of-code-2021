@@ -1,11 +1,12 @@
-use anyhow::Result;
+use std::io::BufRead;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<u8>> {
-    lines
-        .into_iter()
+use anyhow::{anyhow, Result};
+
+pub fn read_input(reader: impl BufRead) -> Result<Vec<u8>> {
+    reader
+        .lines()
         .next()
-        .unwrap()
-        .as_ref()
+        .ok_or_else(|| anyhow!("expected input"))??
         .split(',')
         .map(|n| Ok(n.parse()?))
         .collect()

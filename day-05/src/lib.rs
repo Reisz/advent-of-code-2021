@@ -1,12 +1,14 @@
-mod line;
-mod pos;
+use std::io::BufRead;
 
 use anyhow::Result;
 use itertools::Itertools;
 use line::Line;
 
-pub fn read_input<I: IntoIterator<Item = S>, S: AsRef<str>>(lines: I) -> Result<Vec<Line>> {
-    lines.into_iter().map(|l| l.as_ref().parse()).collect()
+mod line;
+mod pos;
+
+pub fn read_input(reader: impl BufRead) -> Result<Vec<Line>> {
+    reader.lines().map(|l| l?.parse()).collect()
 }
 
 pub fn part1<'a, I: IntoIterator<Item = &'a Line>>(values: I) -> usize {
