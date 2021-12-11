@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use thiserror::Error;
 
+#[derive(Clone)]
 pub struct DigitGrid {
     width: usize,
     height: usize,
@@ -17,7 +18,11 @@ impl DigitGrid {
         self.height.try_into().unwrap()
     }
 
-    pub fn get(&self, x: isize, y: isize) -> Option<u8> {
+    pub fn len(&self) -> usize {
+        self.content.len()
+    }
+
+    fn idx(&self, x: isize, y: isize) -> Option<usize> {
         if x < 0 || y < 0 || x >= self.width() || y >= self.height() as isize {
             return None;
         }
@@ -25,7 +30,15 @@ impl DigitGrid {
         let x: usize = x.try_into().unwrap();
         let y: usize = y.try_into().unwrap();
 
-        Some(self.content[x + y * self.width])
+        Some(x + y * self.width)
+    }
+
+    pub fn get(&self, x: isize, y: isize) -> Option<u8> {
+        self.idx(x, y).map(|i| self.content[i])
+    }
+
+    pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut u8> {
+        self.idx(x, y).map(|i| &mut self.content[i])
     }
 }
 
