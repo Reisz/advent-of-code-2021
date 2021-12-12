@@ -54,9 +54,9 @@ pub fn part2(values: &CaveSystem) -> usize {
                 .iter()
                 .copied()
                 .filter(Cave::is_small)
-                .counts()
-                .iter()
-                .all(|(_, count)| *count == 1)
+                .sorted()
+                .dedup_with_count()
+                .all(|(count, _)| count == 1)
         } else {
             false
         }

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, str::FromStr};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct CaveName([char; 2]);
 
 impl FromStr for CaveName {
@@ -18,7 +18,7 @@ impl FromStr for CaveName {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Cave {
     Start,
     Small(CaveName),
