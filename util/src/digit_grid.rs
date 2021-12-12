@@ -22,6 +22,10 @@ impl DigitGrid {
         self.content.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.content.is_empty()
+    }
+
     fn idx(&self, x: isize, y: isize) -> Option<usize> {
         if x < 0 || y < 0 || x >= self.width() || y >= self.height() as isize {
             return None;

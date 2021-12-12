@@ -74,6 +74,7 @@ pub fn part1(values: &DigitGrid) -> usize {
 
 pub fn part2(values: &DigitGrid) -> usize {
     let mut values = values.clone();
+    #[allow(clippy::maybe_infinite_iter)]
     (1..)
         .find(|_| do_step(&mut values) == values.len())
         .unwrap()
