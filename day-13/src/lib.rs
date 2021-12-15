@@ -66,7 +66,7 @@ pub fn part2(values: &Input) -> usize {
             );
         }
 
-        print!("{}", '\n');
+        println!();
     }
 
     dots.len()
