@@ -76,7 +76,11 @@ fn get_5_5_weight(values: &DigitGrid, x: isize, y: isize) -> Option<usize> {
     values
         .get(x % values.width(), y % values.height())
         .map(|w| {
-            (w as usize + (x / values.width()) as usize + (y / values.height()) as usize - 1) % 9
+            (w as usize
+                + usize::try_from(x / values.width()).unwrap()
+                + usize::try_from(y / values.height()).unwrap()
+                - 1)
+                % 9
                 + 1
         })
 }
