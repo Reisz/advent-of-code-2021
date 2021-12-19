@@ -1,6 +1,7 @@
 use std::{cmp::min, io::BufRead};
 
 use anyhow::{anyhow, Result};
+use util::gauss_sum;
 
 pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
     reader
@@ -36,10 +37,6 @@ fn avg_floor<'a, I: IntoIterator<Item = &'a usize>>(values: I) -> usize {
         .into_iter()
         .fold((0, 0), |(sum, count), v| (sum + v, count + 1));
     sum / count
-}
-
-fn gauss_sum(n: usize) -> usize {
-    (n * (n + 1)) / 2
 }
 
 pub fn part2<'a, I: IntoIterator<Item = &'a usize> + Clone>(values: I) -> usize {

@@ -1,5 +1,9 @@
 pub mod digit_grid;
 
+pub fn gauss_sum(n: usize) -> usize {
+    (n * (n + 1)) / 2
+}
+
 #[macro_export]
 macro_rules! main {
     ($id:ident) => {
