@@ -9,6 +9,21 @@ pub struct Grid<T> {
     content: Vec<T>,
 }
 
+impl<T: Default + Clone> Grid<T> {
+    pub fn new(width: isize, height: isize) -> Self {
+        let width = width.try_into().unwrap();
+        let height = height.try_into().unwrap();
+
+        let mut content = Vec::new();
+        content.resize(width * height, Default::default());
+        Self {
+            width,
+            height,
+            content,
+        }
+    }
+}
+
 impl<T> Grid<T> {
     pub fn width(&self) -> isize {
         self.width.try_into().unwrap()
@@ -44,6 +59,10 @@ impl<T> Grid<T> {
     pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut T> {
         self.idx(x, y).map(|i| &mut self.content[i])
     }
+
+    pub fn for_each<F: FnMut(&T)>(&self, f: F) {
+        self.content.iter().for_each(f);
+    }
 }
 
 #[derive(Debug, Error)]
@@ -56,10 +75,8 @@ pub enum ParseError {
     NoTrailingNewline,
 }
 
-impl FromStr for Grid<u8> {
-    type Err = ParseError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl<T> Grid<T> {
+    fn from_str_predicate<F: Fn(char) -> Option<T>>(s: &str, pred: F) -> Result<Self, ParseError> {
         let mut width = None;
         let mut height = 0;
         let mut content = Vec::new();
@@ -74,16 +91,11 @@ impl FromStr for Grid<u8> {
                 current_width = 0;
                 height += 1;
             } else {
-                content.push(
-                    c.to_digit(10)
-                        .ok_or(ParseError::UnexpectedCharater {
-                            x: current_width,
-                            y: height,
-                            c,
-                        })?
-                        .try_into()
-                        .unwrap(), // Single digit should fit into u8
-                );
+                content.push(pred(c).ok_or(ParseError::UnexpectedCharater {
+                    x: current_width,
+                    y: height,
+                    c,
+                })?);
                 current_width += 1;
             }
         }
@@ -97,5 +109,23 @@ impl FromStr for Grid<u8> {
             height,
             content,
         })
+    }
+}
+
+pub trait Digit: Sized {
+    fn from_char(c: char) -> Option<Self>;
+}
+
+impl Digit for u8 {
+    fn from_char(c: char) -> Option<Self> {
+        c.to_digit(10).map(|n| n.try_into().unwrap())
+    }
+}
+
+impl<T: Digit> FromStr for Grid<T> {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Grid::from_str_predicate(s, Digit::from_char)
     }
 }
