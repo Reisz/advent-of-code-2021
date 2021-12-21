@@ -1,4 +1,4 @@
-pub mod digit_grid;
+pub mod grid;
 
 pub fn gauss_sum(n: usize) -> usize {
     (n * (n + 1)) / 2

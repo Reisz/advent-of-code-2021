@@ -2,9 +2,9 @@ use std::{cmp::Reverse, collections::HashSet, io::Read};
 
 use anyhow::Result;
 use priority_queue::PriorityQueue;
-use util::digit_grid::DigitGrid;
+use util::grid::Grid;
 
-pub fn read_input(mut reader: impl Read) -> Result<DigitGrid> {
+pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse()?)
@@ -61,14 +61,14 @@ fn dijkstra<F: Fn(isize, isize) -> Option<usize>>(get_weight: F, dest: (isize, i
     panic!()
 }
 
-pub fn part1(values: &DigitGrid) -> usize {
+pub fn part1(values: &Grid<u8>) -> usize {
     dijkstra(
-        |x, y| values.get(x, y).map(|w| w as usize),
+        |x, y| values.get(x, y).map(|w| *w as usize),
         (values.width() - 1, values.height() - 1),
     )
 }
 
-fn get_5_5_weight(values: &DigitGrid, x: isize, y: isize) -> Option<usize> {
+fn get_5_5_weight(values: &Grid<u8>, x: isize, y: isize) -> Option<usize> {
     if x < 0 || y < 0 || x >= values.width() * 5 || y >= values.height() * 5 {
         return None;
     }
@@ -76,7 +76,7 @@ fn get_5_5_weight(values: &DigitGrid, x: isize, y: isize) -> Option<usize> {
     values
         .get(x % values.width(), y % values.height())
         .map(|w| {
-            (w as usize
+            (*w as usize
                 + usize::try_from(x / values.width()).unwrap()
                 + usize::try_from(y / values.height()).unwrap()
                 - 1)
@@ -85,7 +85,7 @@ fn get_5_5_weight(values: &DigitGrid, x: isize, y: isize) -> Option<usize> {
         })
 }
 
-pub fn part2(values: &DigitGrid) -> usize {
+pub fn part2(values: &Grid<u8>) -> usize {
     dijkstra(
         |x, y| get_5_5_weight(values, x, y),
         (values.width() * 5 - 1, values.height() * 5 - 1),
@@ -99,19 +99,19 @@ mod test {
     const INPUT: &str = include_str!("test_input.txt");
     const EXPANDED_INPUT: &str = include_str!("test_input_expanded.txt");
 
-    fn input() -> DigitGrid {
+    fn input() -> Grid<u8> {
         INPUT.parse().unwrap()
     }
 
     #[test]
     fn part2_weight() {
         let input = input();
-        let expanded_input: DigitGrid = EXPANDED_INPUT.parse().unwrap();
+        let expanded_input: Grid<u8> = EXPANDED_INPUT.parse().unwrap();
         for x in 0..expanded_input.width() {
             for y in 0..expanded_input.height() {
                 assert_eq!(
                     get_5_5_weight(&input, x, y),
-                    expanded_input.get(x, y).map(|w| w as usize),
+                    expanded_input.get(x, y).map(|w| *w as usize),
                     "{}, {}",
                     x,
                     y

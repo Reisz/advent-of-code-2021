@@ -1,9 +1,9 @@
 use std::io::Read;
 
 use anyhow::Result;
-use util::digit_grid::DigitGrid;
+use util::grid::Grid;
 
-pub fn read_input(mut reader: impl Read) -> Result<DigitGrid> {
+pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse()?)
@@ -45,7 +45,7 @@ impl Flashes {
     }
 }
 
-fn do_step(grid: &mut DigitGrid) -> usize {
+fn do_step(grid: &mut Grid<u8>) -> usize {
     let mut flashes = Flashes::default();
 
     for x in 0..grid.width() {
@@ -67,12 +67,12 @@ fn do_step(grid: &mut DigitGrid) -> usize {
     flashes.count()
 }
 
-pub fn part1(values: &DigitGrid) -> usize {
+pub fn part1(values: &Grid<u8>) -> usize {
     let mut values = values.clone();
     (0..100).map(|_| do_step(&mut values)).sum()
 }
 
-pub fn part2(values: &DigitGrid) -> usize {
+pub fn part2(values: &Grid<u8>) -> usize {
     let mut values = values.clone();
     #[allow(clippy::maybe_infinite_iter)]
     (1..)
@@ -95,7 +95,7 @@ mod test {
                         4846848554\n\
                         5283751526\n";
 
-    fn input() -> DigitGrid {
+    fn input() -> Grid<u8> {
         INPUT.parse().unwrap()
     }
 

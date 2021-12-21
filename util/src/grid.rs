@@ -3,13 +3,13 @@ use std::str::FromStr;
 use thiserror::Error;
 
 #[derive(Clone)]
-pub struct DigitGrid {
+pub struct Grid<T> {
     width: usize,
     height: usize,
-    content: Vec<u8>,
+    content: Vec<T>,
 }
 
-impl DigitGrid {
+impl<T> Grid<T> {
     pub fn width(&self) -> isize {
         self.width.try_into().unwrap()
     }
@@ -37,11 +37,11 @@ impl DigitGrid {
         Some(x + y * self.width)
     }
 
-    pub fn get(&self, x: isize, y: isize) -> Option<u8> {
-        self.idx(x, y).map(|i| self.content[i])
+    pub fn get(&self, x: isize, y: isize) -> Option<&T> {
+        self.idx(x, y).map(|i| &self.content[i])
     }
 
-    pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut u8> {
+    pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut T> {
         self.idx(x, y).map(|i| &mut self.content[i])
     }
 }
@@ -56,7 +56,7 @@ pub enum ParseError {
     NoTrailingNewline,
 }
 
-impl FromStr for DigitGrid {
+impl FromStr for Grid<u8> {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
