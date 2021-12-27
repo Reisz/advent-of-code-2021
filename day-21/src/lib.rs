@@ -80,6 +80,7 @@ mod test {
     }
 
     #[test]
+    #[ignore = "takes too long"]
     fn test2() {
         assert_eq!(part2(INPUT), 444356092776315);
     }
