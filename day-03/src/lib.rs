@@ -5,14 +5,16 @@ use power_report::PowerReport;
 
 mod power_report;
 
-pub fn read_input(reader: impl BufRead) -> Result<Vec<String>> {
+type Input = Vec<String>;
+
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     reader.lines().map(|l| Ok(l?)).collect()
 }
 
-pub fn part1<I: IntoIterator<Item = S>, S: AsRef<str>>(values: I) -> usize {
+pub fn part1(values: &[String]) -> usize {
     values
-        .into_iter()
-        .map(|l| l.as_ref().parse::<PowerReport>().unwrap())
+        .iter()
+        .map(|l| l.parse::<PowerReport>().unwrap())
         .reduce(Add::add)
         .unwrap()
         .power_consumption()
@@ -35,11 +37,8 @@ fn part2_steps(mut input: Vec<String>, req_ordering: Ordering, decider: char) ->
     usize::from_str_radix(&input[0], 2).unwrap()
 }
 
-pub fn part2<I: IntoIterator<Item = S>, S: AsRef<str>>(values: I) -> usize {
-    let (oxygen, co2): (Vec<_>, Vec<_>) = values
-        .into_iter()
-        .map(|s| s.as_ref().to_owned())
-        .partition(part2_counter(0));
+pub fn part2(values: &[String]) -> usize {
+    let (oxygen, co2): (Vec<_>, Vec<_>) = values.iter().cloned().partition(part2_counter(0));
     let oxygen = part2_steps(oxygen, Ordering::Greater, '1');
     let co2 = part2_steps(co2, Ordering::Less, '0');
     oxygen * co2
@@ -47,20 +46,23 @@ pub fn part2<I: IntoIterator<Item = S>, S: AsRef<str>>(values: I) -> usize {
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &[&str] = &[
-        "00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001",
-        "00010", "01010",
-    ];
+    const INPUT: &str = include_str!("test_input.txt");
+
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
+    }
 
     #[test]
     fn test1() {
-        assert_eq!(part1(INPUT), 198);
+        assert_eq!(part1(&input()), 198);
     }
 
     #[test]
     fn test2() {
-        assert_eq!(part2(INPUT), 230);
+        assert_eq!(part2(&input()), 230);
     }
 }

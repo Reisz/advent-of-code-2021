@@ -5,7 +5,9 @@ use game::State;
 
 mod game;
 
-pub fn read_input(reader: impl BufRead) -> Result<State> {
+type Input = State;
+
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     let mut lines = reader.lines();
 
     let a = lines.next().unwrap().unwrap();
@@ -17,7 +19,7 @@ pub fn read_input(reader: impl BufRead) -> Result<State> {
     Ok(State::new(a.trim().parse()?, b.trim().parse()?))
 }
 
-pub fn part1(values: &State) -> usize {
+pub fn part1(values: &Input) -> usize {
     let mut state = values.clone();
 
     let mut die = 1;
@@ -42,7 +44,7 @@ pub fn part1(values: &State) -> usize {
 const SCORE_DISTRIBUTION: [(usize, usize); 7] =
     [(3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1)];
 
-pub fn part2(values: &State) -> usize {
+pub fn part2(values: &Input) -> usize {
     let mut states = vec![(values.clone(), 1)];
     let mut states_buf = Vec::new();
     let mut wins = [0; 2];
@@ -70,18 +72,24 @@ pub fn part2(values: &State) -> usize {
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &State = &State::new(4, 8);
+    const INPUT: &str = include_str!("test_input.txt");
+
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
+    }
 
     #[test]
     fn test1() {
-        assert_eq!(part1(INPUT), 739785);
+        assert_eq!(part1(&input()), 739785);
     }
 
     #[test]
     #[ignore = "takes too long"]
     fn test2() {
-        assert_eq!(part2(INPUT), 444356092776315);
+        assert_eq!(part2(&input()), 444356092776315);
     }
 }

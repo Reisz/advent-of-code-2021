@@ -5,16 +5,18 @@ use bracket::Token;
 
 mod bracket;
 
-pub fn read_input(reader: impl BufRead) -> Result<Vec<Vec<Token>>> {
+type Input = Vec<Vec<Token>>;
+
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     reader
         .lines()
         .map(|l| Ok(l?.chars().map(Token::from).collect()))
         .collect()
 }
 
-pub fn part1<'a, I: IntoIterator<Item = &'a Vec<Token>>>(values: I) -> usize {
+pub fn part1(values: &[Vec<Token>]) -> usize {
     values
-        .into_iter()
+        .iter()
         .filter_map(|line| {
             let mut stack = Vec::new();
             for token in line {
@@ -32,9 +34,9 @@ pub fn part1<'a, I: IntoIterator<Item = &'a Vec<Token>>>(values: I) -> usize {
         .sum()
 }
 
-pub fn part2<'a, I: IntoIterator<Item = &'a Vec<Token>>>(values: I) -> usize {
+pub fn part2(values: &[Vec<Token>]) -> usize {
     let mut scores: Vec<usize> = values
-        .into_iter()
+        .iter()
         .filter_map(|line| {
             let mut stack = Vec::new();
             for token in line {
@@ -66,18 +68,9 @@ mod test {
 
     use super::*;
 
-    const INPUT: &str = "[({(<(())[]>[[{[]{<()<>>\n\
-        [(()[<>])]({[<{<<[]>>(\n\
-        {([(<{}[<>[]}>{[]{[(<()>\n\
-        (((({<>}<{<{<>}{[]{[]{}\n\
-        [[<[([]))<([[{}[[()]]]\n\
-        [{[{({}]{}}([{[{{{}}([]\n\
-        {<[[]]>}<{[{[{[]{()[[[]\n\
-        [<(<(<(<{}))><([]([]()\n\
-        <{([([[(<>()){}]>(<<{{\n\
-        <{([{{}}[<[[[<>{}]]]>[]]";
+    const INPUT: &str = include_str!("test_input.txt");
 
-    fn input() -> Vec<Vec<Token>> {
+    fn input() -> Input {
         read_input(Cursor::new(INPUT)).unwrap()
     }
 

@@ -3,7 +3,9 @@ use std::{cmp::min, io::BufRead};
 use anyhow::{anyhow, Result};
 use util::gauss_sum;
 
-pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
+type Input = Vec<usize>;
+
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     reader
         .lines()
         .next()
@@ -13,8 +15,8 @@ pub fn read_input(reader: impl BufRead) -> Result<Vec<usize>> {
         .collect()
 }
 
-fn median<'a, I: IntoIterator<Item = &'a usize>>(values: I) -> usize {
-    let mut values: Vec<_> = values.into_iter().copied().collect();
+fn median(values: &[usize]) -> usize {
+    let mut values: Vec<_> = values.iter().copied().collect();
     values.sort_unstable();
     values[values.len() / 2]
 }
@@ -27,22 +29,22 @@ fn abs_diff(a: usize, b: usize) -> usize {
     }
 }
 
-pub fn part1<'a, I: IntoIterator<Item = &'a usize> + Clone>(values: I) -> usize {
-    let median = median(values.clone());
-    values.into_iter().map(|n| abs_diff(*n, median)).sum()
+pub fn part1(values: &[usize]) -> usize {
+    let median = median(values);
+    values.iter().map(|n| abs_diff(*n, median)).sum()
 }
 
-fn avg_floor<'a, I: IntoIterator<Item = &'a usize>>(values: I) -> usize {
+fn avg_floor(values: &[usize]) -> usize {
     let (sum, count) = values
-        .into_iter()
+        .iter()
         .fold((0, 0), |(sum, count), v| (sum + v, count + 1));
     sum / count
 }
 
-pub fn part2<'a, I: IntoIterator<Item = &'a usize> + Clone>(values: I) -> usize {
-    let avg = avg_floor(values.clone());
+pub fn part2(values: &[usize]) -> usize {
+    let avg = avg_floor(values);
     let (a, b) = values
-        .into_iter()
+        .iter()
         .map(|n| {
             (
                 gauss_sum(abs_diff(*n, avg)),
@@ -56,23 +58,29 @@ pub fn part2<'a, I: IntoIterator<Item = &'a usize> + Clone>(values: I) -> usize 
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &[usize] = &[16, 1, 2, 0, 4, 2, 7, 1, 2, 14];
+    const INPUT: &str = include_str!("test_input.txt");
+
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
+    }
 
     #[test]
     fn test_median() {
-        assert_eq!(median(INPUT), 2);
+        assert_eq!(median(&input()), 2);
     }
 
     #[test]
     fn test1() {
-        assert_eq!(part1(INPUT), 37);
+        assert_eq!(part1(&input()), 37);
     }
 
     #[test]
     fn test_avg_floor() {
-        assert_eq!(avg_floor(INPUT), 4);
+        assert_eq!(avg_floor(&input()), 4);
     }
 
     #[test]
@@ -84,6 +92,6 @@ mod test {
 
     #[test]
     fn test2() {
-        assert_eq!(part2(INPUT), 168);
+        assert_eq!(part2(&input()), 168);
     }
 }

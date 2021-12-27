@@ -6,28 +6,21 @@ use snailfish_sum::{SnailfishSum, SnailfishSums};
 
 mod snailfish_sum;
 
-pub fn read_input(mut reader: impl BufRead) -> Result<Vec<SnailfishSum>> {
+type Input = Vec<SnailfishSum>;
+
+pub fn read_input(mut reader: impl BufRead) -> Result<Input> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse::<SnailfishSums>()?.0)
 }
 
-pub fn part1<'a, I: IntoIterator<Item = &'a SnailfishSum>>(values: I) -> usize {
-    values
-        .into_iter()
-        .cloned()
-        .reduce(Add::add)
-        .unwrap()
-        .magnitude()
+pub fn part1(values: &[SnailfishSum]) -> usize {
+    values.iter().cloned().reduce(Add::add).unwrap().magnitude()
 }
 
-pub fn part2<'a, I: IntoIterator<Item = &'a SnailfishSum> + Clone>(values: I) -> usize
-where
-    <I as std::iter::IntoIterator>::IntoIter: std::clone::Clone,
-{
+pub fn part2(values: &[SnailfishSum]) -> usize {
     values
-        .clone()
-        .into_iter()
+        .iter()
         .cartesian_product(values)
         .filter(|(a, b)| a != b)
         .map(|(a, b)| (a.clone() + b.clone()).magnitude())
@@ -37,12 +30,14 @@ where
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
     const INPUT: &str = include_str!("test_input.txt");
 
-    fn input() -> Vec<SnailfishSum> {
-        INPUT.parse::<SnailfishSums>().unwrap().0
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
     }
 
     #[test]

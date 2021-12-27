@@ -3,7 +3,9 @@ use std::io::Read;
 use anyhow::Result;
 use util::grid::Grid;
 
-pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
+type Input = Grid<u8>;
+
+pub fn read_input(mut reader: impl Read) -> Result<Input> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse()?)
@@ -45,7 +47,7 @@ impl Flashes {
     }
 }
 
-fn do_step(grid: &mut Grid<u8>) -> usize {
+fn do_step(grid: &mut Input) -> usize {
     let mut flashes = Flashes::default();
 
     for x in 0..grid.width() {
@@ -67,12 +69,12 @@ fn do_step(grid: &mut Grid<u8>) -> usize {
     flashes.count()
 }
 
-pub fn part1(values: &Grid<u8>) -> usize {
+pub fn part1(values: &Input) -> usize {
     let mut values = values.clone();
     (0..100).map(|_| do_step(&mut values)).sum()
 }
 
-pub fn part2(values: &Grid<u8>) -> usize {
+pub fn part2(values: &Input) -> usize {
     let mut values = values.clone();
     #[allow(clippy::maybe_infinite_iter)]
     (1..)
@@ -82,32 +84,23 @@ pub fn part2(values: &Grid<u8>) -> usize {
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &str = "5483143223\n\
-                        2745854711\n\
-                        5264556173\n\
-                        6141336146\n\
-                        6357385478\n\
-                        4167524645\n\
-                        2176841721\n\
-                        6882881134\n\
-                        4846848554\n\
-                        5283751526\n";
+    const INPUT: &str = include_str!("test_input.txt");
 
-    fn input() -> Grid<u8> {
-        INPUT.parse().unwrap()
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
     }
 
     #[test]
     fn test1() {
-        let input = input();
-        assert_eq!(part1(&input), 1656);
+        assert_eq!(part1(&input()), 1656);
     }
 
     #[test]
     fn test2() {
-        let input = input();
-        assert_eq!(part2(&input), 195);
+        assert_eq!(part2(&input()), 195);
     }
 }

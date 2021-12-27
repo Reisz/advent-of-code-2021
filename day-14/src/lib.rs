@@ -32,24 +32,7 @@ mod test {
 
     use super::*;
 
-    const INPUT: &str = "NNCB\n\
-                        \n\
-                        CH -> B\n\
-                        HH -> N\n\
-                        CB -> H\n\
-                        NH -> C\n\
-                        HB -> C\n\
-                        HC -> B\n\
-                        HN -> C\n\
-                        NN -> C\n\
-                        BH -> H\n\
-                        NC -> B\n\
-                        NB -> B\n\
-                        BN -> B\n\
-                        BB -> N\n\
-                        BC -> B\n\
-                        CC -> N\n\
-                        CN -> C";
+    const INPUT: &str = include_str!("test_input.txt");
 
     fn input() -> Input {
         read_input(Cursor::new(INPUT)).unwrap()

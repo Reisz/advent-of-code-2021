@@ -3,7 +3,9 @@ use std::{collections::HashSet, io::Read};
 use anyhow::Result;
 use util::grid::Grid;
 
-pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
+type Input = Grid<u8>;
+
+pub fn read_input(mut reader: impl Read) -> Result<Input> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse()?)
@@ -13,7 +15,7 @@ fn neighbors(x: isize, y: isize) -> impl Iterator<Item = (isize, isize)> {
     [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)].into_iter()
 }
 
-fn is_low_point(grid: &Grid<u8>, x: isize, y: isize) -> bool {
+fn is_low_point(grid: &Input, x: isize, y: isize) -> bool {
     let val = grid.get(x, y).unwrap();
     for (x, y) in neighbors(x, y) {
         if grid.get(x, y).map_or(false, |neighbor| val >= neighbor) {
@@ -23,7 +25,7 @@ fn is_low_point(grid: &Grid<u8>, x: isize, y: isize) -> bool {
     true
 }
 
-pub fn part1(values: &Grid<u8>) -> usize {
+pub fn part1(values: &Input) -> usize {
     let mut total = 0;
 
     for x in 0..values.width() {
@@ -37,7 +39,7 @@ pub fn part1(values: &Grid<u8>) -> usize {
     total
 }
 
-pub fn part2(values: &Grid<u8>) -> usize {
+pub fn part2(values: &Input) -> usize {
     let mut basins: Vec<usize> = Vec::new();
 
     for x in 0..values.width() {
@@ -74,27 +76,23 @@ pub fn part2(values: &Grid<u8>) -> usize {
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &str = "2199943210\n\
-                        3987894921\n\
-                        9856789892\n\
-                        8767896789\n\
-                        9899965678\n";
+    const INPUT: &str = include_str!("test_input.txt");
 
-    fn input() -> Grid<u8> {
-        INPUT.parse().unwrap()
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
     }
 
     #[test]
     fn test1() {
-        let input = input();
-        assert_eq!(part1(&input), 15);
+        assert_eq!(part1(&input()), 15);
     }
 
     #[test]
     fn test2() {
-        let input = input();
-        assert_eq!(part2(&input), 1134);
+        assert_eq!(part2(&input()), 1134);
     }
 }

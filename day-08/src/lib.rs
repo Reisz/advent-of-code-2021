@@ -1,40 +1,22 @@
-mod swap_remove_pred;
+use std::io::BufRead;
 
-use std::{io::BufRead, str::FromStr};
+use anyhow::Result;
 
-use anyhow::{anyhow, Result};
-
+use segment_display::SegmentDisplay;
 use swap_remove_pred::SwapRemovePred;
 
-fn to_bits(s: &str) -> u8 {
-    s.chars()
-        .map(|c| c.to_digit(17).unwrap_or_else(|| panic!("{}", c)) - 10)
-        .fold(0, |acc, val| acc | (1 << val))
-}
+mod segment_display;
+mod swap_remove_pred;
 
-pub struct Input(pub Vec<u8>, pub Vec<u8>);
+type Input = Vec<SegmentDisplay>;
 
-impl FromStr for Input {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (test, values) = s
-            .split_once('|')
-            .ok_or(anyhow!("Could not find separator"))?;
-        Ok(Input(
-            test.trim().split_whitespace().map(to_bits).collect(),
-            values.trim().split_whitespace().map(to_bits).collect(),
-        ))
-    }
-}
-
-pub fn read_input(reader: impl BufRead) -> Result<Vec<Input>> {
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     reader.lines().map(|l| l?.parse()).collect()
 }
 
-pub fn part1<'a, I: IntoIterator<Item = &'a Input>>(values: I) -> usize {
+pub fn part1(values: &[SegmentDisplay]) -> usize {
     values
-        .into_iter()
+        .iter()
         .flat_map(|v| {
             v.1.iter().copied().map(|v| {
                 let count = v.count_ones();
@@ -44,7 +26,7 @@ pub fn part1<'a, I: IntoIterator<Item = &'a Input>>(values: I) -> usize {
         .sum()
 }
 
-fn find_value(input: &Input) -> usize {
+fn find_value(input: &SegmentDisplay) -> usize {
     let mut test_values = input.0.clone();
     let mut configs = [0; 10];
     configs[1] = test_values.swap_remove_pred(|v| v.count_ones() == 2);
@@ -71,97 +53,20 @@ fn find_value(input: &Input) -> usize {
         .fold(0, |acc, v| acc * 10 + v)
 }
 
-pub fn part2<'a, I: IntoIterator<Item = &'a Input>>(values: I) -> usize {
-    values.into_iter().map(find_value).sum()
+pub fn part2(values: &[SegmentDisplay]) -> usize {
+    values.iter().map(find_value).sum()
 }
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &[([&str; 10], [&str; 4])] = &[
-        (
-            [
-                "be", "cfbegad", "cbdgef", "fgaecd", "cgeb", "fdcge", "agebfd", "fecdb", "fabcd",
-                "edb",
-            ],
-            ["fdgacbe", "cefdb", "cefbgd", "gcbe"],
-        ),
-        (
-            [
-                "edbfga", "begcd", "cbg", "gc", "gcadebf", "fbgde", "acbgfd", "abcde", "gfcbed",
-                "gfec",
-            ],
-            ["fcgedb", "cgb", "dgebacf", "gc"],
-        ),
-        (
-            [
-                "fgaebd", "cg", "bdaec", "gdafb", "agbcfd", "gdcbef", "bgcad", "gfac", "gcb",
-                "cdgabef",
-            ],
-            ["cg", "cg", "fdcagb", "cbg"],
-        ),
-        (
-            [
-                "fbegcd", "cbd", "adcefb", "dageb", "afcb", "bc", "aefdc", "ecdab", "fgdeca",
-                "fcdbega",
-            ],
-            ["efabcd", "cedba", "gadfec", "cb"],
-        ),
-        (
-            [
-                "aecbfdg", "fbg", "gf", "bafeg", "dbefa", "fcge", "gcbea", "fcaegb", "dgceab",
-                "fcbdga",
-            ],
-            ["gecf", "egdcabf", "bgf", "bfgea"],
-        ),
-        (
-            [
-                "fgeab", "ca", "afcebg", "bdacfeg", "cfaedg", "gcfdb", "baec", "bfadeg", "bafgc",
-                "acf",
-            ],
-            ["gebdcfa", "ecba", "ca", "fadegcb"],
-        ),
-        (
-            [
-                "dbcfg", "fgd", "bdegcaf", "fgec", "aegbdf", "ecdfab", "fbedc", "dacgb", "gdcebf",
-                "gf",
-            ],
-            ["cefg", "dcbef", "fcge", "gbcadfe"],
-        ),
-        (
-            [
-                "bdfegc", "cbegaf", "gecbf", "dfcage", "bdacg", "ed", "bedf", "ced", "adcbefg",
-                "gebcd",
-            ],
-            ["ed", "bcgafe", "cdgba", "cbgef"],
-        ),
-        (
-            [
-                "egadfb", "cdbfeg", "cegd", "fecab", "cgb", "gbdefca", "cg", "fgcdab", "egfdb",
-                "bfceg",
-            ],
-            ["gbdfcae", "bgc", "cg", "cgb"],
-        ),
-        (
-            [
-                "gcafb", "gcf", "dcaebfg", "ecagb", "gf", "abcdeg", "gaef", "cafbge", "fdbac",
-                "fegbdc",
-            ],
-            ["fgae", "cfgab", "fg", "bagce"],
-        ),
-    ];
+    const INPUT: &str = include_str!("test_input.txt");
 
-    fn input() -> Vec<Input> {
-        INPUT
-            .iter()
-            .map(|i| {
-                Input(
-                    i.0.iter().cloned().map(to_bits).collect(),
-                    i.1.iter().cloned().map(to_bits).collect(),
-                )
-            })
-            .collect()
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
     }
 
     #[test]

@@ -4,7 +4,9 @@ use anyhow::Result;
 use priority_queue::PriorityQueue;
 use util::grid::Grid;
 
-pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
+type Input = Grid<u8>;
+
+pub fn read_input(mut reader: impl Read) -> Result<Input> {
     let mut buf = String::new();
     reader.read_to_string(&mut buf)?;
     Ok(buf.parse()?)
@@ -12,27 +14,6 @@ pub fn read_input(mut reader: impl Read) -> Result<Grid<u8>> {
 
 fn neighbors(x: isize, y: isize) -> impl Iterator<Item = (isize, isize)> {
     [(x, y - 1), (x - 1, y), (x + 1, y), (x, y + 1)].into_iter()
-}
-
-#[derive(Debug, Eq)]
-struct Node((isize, isize), usize);
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.1.cmp(&other.1)
-    }
-}
-
-impl PartialEq for Node {
-    fn eq(&self, other: &Self) -> bool {
-        self.1 == other.1
-    }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
 }
 
 fn dijkstra<F: Fn(isize, isize) -> Option<usize>>(get_weight: F, dest: (isize, isize)) -> usize {
@@ -61,14 +42,14 @@ fn dijkstra<F: Fn(isize, isize) -> Option<usize>>(get_weight: F, dest: (isize, i
     panic!()
 }
 
-pub fn part1(values: &Grid<u8>) -> usize {
+pub fn part1(values: &Input) -> usize {
     dijkstra(
         |x, y| values.get(x, y).map(|w| *w as usize),
         (values.width() - 1, values.height() - 1),
     )
 }
 
-fn get_5_5_weight(values: &Grid<u8>, x: isize, y: isize) -> Option<usize> {
+fn get_5_5_weight(values: &Input, x: isize, y: isize) -> Option<usize> {
     if x < 0 || y < 0 || x >= values.width() * 5 || y >= values.height() * 5 {
         return None;
     }
@@ -85,7 +66,7 @@ fn get_5_5_weight(values: &Grid<u8>, x: isize, y: isize) -> Option<usize> {
         })
 }
 
-pub fn part2(values: &Grid<u8>) -> usize {
+pub fn part2(values: &Input) -> usize {
     dijkstra(
         |x, y| get_5_5_weight(values, x, y),
         (values.width() * 5 - 1, values.height() * 5 - 1),
@@ -99,7 +80,7 @@ mod test {
     const INPUT: &str = include_str!("test_input.txt");
     const EXPANDED_INPUT: &str = include_str!("test_input_expanded.txt");
 
-    fn input() -> Grid<u8> {
+    fn input() -> Input {
         INPUT.parse().unwrap()
     }
 

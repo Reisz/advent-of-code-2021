@@ -2,7 +2,9 @@ use std::io::BufRead;
 
 use anyhow::{anyhow, Result};
 
-pub fn read_input(reader: impl BufRead) -> Result<Vec<u8>> {
+type Input = Vec<u8>;
+
+pub fn read_input(reader: impl BufRead) -> Result<Input> {
     reader
         .lines()
         .next()
@@ -12,9 +14,9 @@ pub fn read_input(reader: impl BufRead) -> Result<Vec<u8>> {
         .collect()
 }
 
-fn calculate<'a, I: IntoIterator<Item = &'a u8>>(values: I, times: usize) -> usize {
+fn calculate(values: &[u8], times: usize) -> usize {
     let mut counts = [0; 9];
-    values.into_iter().for_each(|&n| counts[n as usize] += 1);
+    values.iter().for_each(|&n| counts[n as usize] += 1);
     for _ in 0..times {
         counts = [
             counts[1],
@@ -31,27 +33,33 @@ fn calculate<'a, I: IntoIterator<Item = &'a u8>>(values: I, times: usize) -> usi
     counts.into_iter().sum()
 }
 
-pub fn part1<'a, I: IntoIterator<Item = &'a u8>>(values: I) -> usize {
+pub fn part1(values: &[u8]) -> usize {
     calculate(values, 80)
 }
 
-pub fn part2<'a, I: IntoIterator<Item = &'a u8>>(values: I) -> usize {
+pub fn part2(values: &[u8]) -> usize {
     calculate(values, 256)
 }
 
 #[cfg(test)]
 mod test {
+    use std::io::Cursor;
+
     use super::*;
 
-    const INPUT: &[u8] = &[3, 4, 3, 1, 2];
+    const INPUT: &str = include_str!("test_input.txt");
+
+    fn input() -> Input {
+        read_input(Cursor::new(INPUT)).unwrap()
+    }
 
     #[test]
     fn test1() {
-        assert_eq!(part1(INPUT), 5934);
+        assert_eq!(part1(&input()), 5934);
     }
 
     #[test]
     fn test2() {
-        assert_eq!(part2(INPUT), 26984457539);
+        assert_eq!(part2(&input()), 26984457539);
     }
 }
