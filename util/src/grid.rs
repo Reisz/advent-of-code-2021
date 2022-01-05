@@ -65,6 +65,12 @@ impl<T> Grid<T> {
     }
 }
 
+impl<T: Default + Clone> Grid<T> {
+    pub fn clear(&mut self) {
+        self.content.fill(Default::default());
+    }
+}
+
 #[derive(Debug, Error)]
 pub enum ParseError {
     #[error("width of line {0} did not match previous widths")]
