@@ -16,9 +16,8 @@ pub fn part1(values: &[usize]) -> usize {
 pub fn part2(values: &[usize]) -> usize {
     part1(
         &values
-            .iter()
-            .tuple_windows()
-            .map(|(a, b, c)| a + b + c)
+            .windows(3)
+            .map(|arr| arr.iter().sum())
             .collect::<Vec<_>>(),
     )
 }
